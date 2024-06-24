@@ -56,4 +56,55 @@ describe('template spec', () => {
     cy.get('.todo-list li')
       .should('have.length', 2);
   });
+
+  it('Marca todas as tarefas como completas', () => {
+    cy.visit('http://127.0.0.1:7001');
+  
+    cy.get('.new-todo')
+      .type('Completa 1{enter}')
+      .type('Completa 2{enter}')
+      .type('Completa 3{enter}');
+  
+    cy.get('.toggle-all-label')
+      .click();
+  
+    cy.get('.todo-list li')
+      .each(($el) => {
+        cy.wrap($el).should('have.class', 'completed');
+      });
+  });  
+
+  it('Limpa tarefas completas', () => {
+    cy.visit('http://127.0.0.1:7001');
+
+    cy.get('.new-todo')
+      .type('Tarefa Limpar{enter}')
+      .type('Tarefa Limpar 2{enter}')
+      .type('Tarefa Limpar 3{enter}');
+
+    cy.get('.toggle-all-label')
+      .click();
+
+    cy.get('.clear-completed').click();
+
+    cy.get('.todo-list li')
+      .should('have.length', 0);
+  });
+
+  it('Edita uma tarefa e verifica se a edição foi salva corretamente', () => {
+    cy.visit('http://127.0.0.1:7001');
+    
+    cy.get('.new-todo')
+      .type('Data da prova de ES: 01/07{enter}');
+
+    cy.get('.todo-list li').dblclick();
+
+    cy.get('.todo-list li input.edit')
+      .clear()
+      .type('Data da prova de ES: 08/07{enter}');
+
+    cy.get('.todo-list li')
+      .should('have.length', 1)
+      .and('contain', 'Data da prova de ES: 08/07');
+  });
 });
